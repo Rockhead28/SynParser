@@ -20,7 +20,7 @@ def convert_to_json_with_gpt(resume_text: str, api_key: str) -> Optional[dict]:
 
     client = OpenAI(api_key=api_key)
 
-    prompt = f"""
+   prompt = f"""
 You are a resume parser. Extract the following structured fields from the resume text below and return ONLY a valid JSON object.
 
 Required fields:
@@ -29,7 +29,7 @@ Required fields:
 - email
 - skills (as a list)
 - languages
-- education: list of {{education certificate}}
+- education: list of {{degree, institution, year, cgpa}}
 - work_experience: list of {{
     company_name (reformat font to only capitalize first letter as capital),
     duration,
@@ -39,6 +39,7 @@ Required fields:
 }}
 
 Make sure work_experience is a list of entries, and fields like skills or job_description are lists, not strings.
+If a value for a field is not found, use null as the value."
 
 Resume text:
 \"\"\"
