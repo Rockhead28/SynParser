@@ -21,25 +21,33 @@ def convert_to_json_with_gpt(resume_text: str, api_key: str) -> Optional[dict]:
     client = OpenAI(api_key=api_key)
 
    prompt = f"""
-You are a resume parser. Extract the following structured fields from the resume text below and return ONLY a valid JSON object.
+You are an expert resume parsing system. Your task is to extract structured information from the provided resume text.
 
-Required fields:
-- name
-- contact_number
-- email
-- skills (as a list)
-- languages
-- education: list of {{degree, institution, year, cgpa}}
-- work_experience: list of {{
-    company_name (reformat font to only capitalize first letter as capital),
-    duration,
-    job_title,
-    job_description (as a list),
-    achievements (if available)
-}}
+You MUST follow these rules:
+1.  Return ONLY a single, valid JSON object. Do not include any introductory text, explanations, or apologies (e.g., "Here is the JSON...").
+2.  All values in the JSON object, including years and GPA, MUST be formatted as strings. This is critical for data type consistency. #<-- Prevents the TypeError
+3.  Adhere strictly to the JSON schema provided below.
+4.  If a field or value is not found in the text, use `null` as the value. Do not make up information.
 
-Make sure work_experience is a list of entries, and fields like skills or job_description are lists, not strings.
-If a value for a field is not found, use null as the value."
+### JSON Schema and Formatting:
+- `name`: (string)
+- `contact_number`: (string)
+- `email`: (string)
+- `skills`: (list of strings)
+- `languages`: (list of strings)
+- `nationality`: (strings)
+- `summary`: (strings)
+- `education`: (list of objects)
+  - `degree`: (string)
+  - `institution`: (string)
+  - `year`: (string) 
+  - `cgpa`: (string) 
+- `work_experience`: (list of objects)
+  - `company_name`: (string, formatted in Title Case)
+  - `duration`: (string)
+  - `job_title`: (string)
+  - `job_description`: (list of strings)
+  - `achievements`: (list of strings, use an empty list `[]` if none are found)
 
 Resume text:
 \"\"\"
