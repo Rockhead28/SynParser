@@ -110,24 +110,40 @@ def generate_resume(data: dict, template_path: str) -> Optional[io.BytesIO]:
                             replace_text_in_paragraph(paragraph, key, value)
 
     # 2. Education (Your original logic)
-    education_list = data.get("education", [])
-    if education_list:
-        edu_blocks = []
-        for entry in education_list:
-            block_lines = []
-            if "degree" in entry: block_lines.append(entry["degree"])
-            if "institution" in entry: block_lines.append(entry["institution"])
-            if "year" in entry: block_lines.append(entry["year"])
-            if "cgpa" in entry: block_lines.append(f"CGPA: {entry['cgpa']}")
-            edu_blocks.append("\n".join(block_lines))
-        formatted_education_string = "\n\n".join(edu_blocks)
+    education = {
+        "{DEGREE}", "{INSTITUTION}", "{EDUYEAR}",
+        "{CGPA}"
+    }
 
-        for table in doc.tables:
-            for row in table.rows:
-                for cell in row.cells:
-                    for p in cell.paragraphs:
-                        if "{EDUCATION}" in p.text:
-                            replace_with_multiline_text(p, "{EDUCATION}", formatted_education_string)
+    for table in doc.tables:
+        template_rows_info = []
+        for i, row in enumerate(table.rows):
+            row_text = "".join(cell.text for cell in row.cells)
+            if any(ph in row_text for ph in education):
+                template_rows_info.append({'row': row, 'index': i})
+
+        if not template_rows_info: continue
+
+        template_rows = [info['row'] for info in template_rows_info]
+
+        for experience in data.get("education", []):
+            for template_row in template_rows:
+                new_row_elem = deepcopy(template_row._element)
+                table._tbl.append(new_row_elem)
+                new_row = table.rows[-1]
+
+                for cell in new_row.cells:
+                    for p in list(cell.paragraphs):
+                        replace_text_in_paragraph(p, "{DEGREE}", experience.get("degree", ""))
+                        replace_text_in_paragraph(p, "{INSTITUTION}", experience.get("institution", ""))
+                        replace_text_in_paragraph(p, "{EDUYEAR}", experience.get("year", ""))
+                        replace_text_in_paragraph(p, "{CGPA}", experience.get("cgpa", ""))
+        
+        for template_row in reversed(template_rows):
+            tbl = table._tbl
+            tbl.remove(template_row._tr)
+        
+        break
 
     # 3. Skills and Languages (Your original logic)
     list_replacements = {
