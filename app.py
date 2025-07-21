@@ -105,8 +105,8 @@ def main():
 
     st.divider()
 
-"""
-Uncomment this to show text & JSON
+def uncomment():
+#Comment the above function to show text & JSON
     # --- Display Results Section (No changes needed here) ---
     st.header("Processing Results")
     if not uploaded_resume:
@@ -125,9 +125,8 @@ Uncomment this to show text & JSON
         if st.session_state.parsed_data:
             st.json(st.session_state.parsed_data)
         else:
-            # Display an empty-looking JSON object as a placeholder
+             #Display an empty-looking JSON object as a placeholder
             st.json({})
-"""
    
 if __name__ == "__main__":
     main()
