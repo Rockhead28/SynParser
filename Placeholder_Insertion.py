@@ -7,6 +7,7 @@ from docx import Document
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 
+
 # Your original helper functions (unchanged)
 def replace_text_in_paragraph(paragraph: Paragraph, key: str, value: str):
     for run in paragraph.runs:
