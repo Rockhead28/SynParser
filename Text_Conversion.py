@@ -20,7 +20,7 @@ def convert_to_json_with_gpt(resume_text: str, api_key: str) -> Optional[dict]:
 
     client = OpenAI(api_key=api_key)
 
-   prompt = f"""
+    prompt = f"""
     You are an expert resume parsing system. Your task is to extract structured information from the provided resume text.
     
     You MUST follow these rules:
